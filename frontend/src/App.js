@@ -1,10 +1,16 @@
 import './App.css';
-import './component/AdTemplate.jsx'
+import FlowGrid from './component/FlowGrid';
+// import AdTemplate from './component/AdTemplate.jsx'
+// import AdGrid from './component/AdGrid.jsx'
+import NavBar from './component/NavBar.jsx'
 
 function App() {
   return (
     <div className="App">
-      <h1>Website</h1>
+      <NavBar />
+      <div id='grid'>
+        <FlowGrid />
+      </div>
     </div>
   );
 }
