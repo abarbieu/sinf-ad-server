@@ -25,7 +25,7 @@ app.use(
 
 app.use(bodyParser.json({ limit: "500mb" }));
 
-app.use("/api/reporting/", reportingRoutes);
+app.use("/api/reporting", reportingRoutes);
 
 app.get("/api/", (req, res, next) => {
 	res.header("Content-Type", "application/json");

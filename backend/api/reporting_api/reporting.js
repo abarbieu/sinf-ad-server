@@ -1,5 +1,4 @@
 require("dotenv").config({ path: "../" });
-console.log(process.env)
 const { Pool } = require("pg");
 
 const pool = new Pool();
@@ -11,10 +10,11 @@ const get = (req, res) => {
 	res.header("Content-Type", "application/json");
 	pool.query(`SELECT * FROM ${airlines}`, (err, result) => {
 		if (err) {
+			console.error(err);
 			res.status(500).json({ err });
 			return;
 		} else {
-			res.status(200).send(result);
+			res.status(200).json(result);
 			return;
 		}
 	});
@@ -30,7 +30,7 @@ const createItem = (req, res) => {
 				res.status(500).json({ err });
 				return;
 			} else {
-				res.status(200).send(result);
+				res.status(200).json(result);
 			}
 		}
 	);
