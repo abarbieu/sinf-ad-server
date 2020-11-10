@@ -1,38 +1,210 @@
-// calls to the ad inventory (google cloud bucket that stores images by name)
-require("dotenv").config({ path: "/" });
+require("dotenv").config({ path: "../" });
 
-// PUT received ad metadata, including image path, in database, and image data in folder
-const storeAd = (req, res) => {};
+const fs = require("fs");
+const http = require("http");
+const { Client } = require("pg");
+var connectionString = process.env.PG_CXN;
+const client = new Client({
+	connectionString: connectionString,
+});
+client.connect();
 
-// POST request with ad id, and content of the ad, if id exists, update provided content
-const updateAd = (req, res) => {};
+const addb = process.env.ADDB || "addb";
+const statsdb = process.env.STATSDB || "statsdb";
 
-// https://cloud.google.com/storage/docs/xml-api/get-object
-// GET request with ad ID at path which sends all metadata from DB in JSON form
-const getAdByName = (req, res) => {
-	const name = req.params.adName;
+const storeAd = (req, res) => {
+	res.header("Content-Type", "application/json");
 
-	try {
-		// GET call to bucket
-		// if the image exists, get the image and store it locally
-		// return the path to that image to get accessed front end
-		const adPath = "/ad_images/" + name + ".jpg";
-		res.status(200).json(adPath);
-	} catch (err) {
-		// ad doesnt exist under that name
-		// send back error response
-		res.status(400).json({ err: "No ad found with name " + name });
-		return;
-		// other possible errors?
-	}
+	const image = req.params.image;
+	const adName = req.params.adName;
+	const mainText = req.params.mainText;
+	const subText = req.params.subText;
+	const linkText = req.params.linkText;
+	const linkLocation = req.params.linkLocation;
+	const width = req.params.width;
+	const height = req.params.height;
+	const flightId = req.params.flightId;
+	const imageLoc = adName + flightId + ".jpg";
+
+	fs.writeFile(imageLoc, image, function (err) {
+		if (err) {
+			res.status(500).json({ "status": "failure", req });
+			return;
+		}
+		console.log("Ad image saved.");
+	});
+
+	const adObjectData = 0;
+
+	client.query(
+		`INSERT INTO ${addb} ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+		[adName],
+		[imageLoc],
+		[mainText],
+		[subText],
+		[linkText],
+		[linkLocation],
+		[width],
+		[height],
+		[flightId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ "status": "failure", err });
+				return;
+			} else {
+				adObjectData = result;
+				console.log("Ad images inserted into addb");
+			}
+		}
+	);
+
+	// get ad id from addb
+	client.query(
+		`SELECT adId from addb where adName = $1`,
+		[adName],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ "status": "failure", err });
+				return;
+			}
+			const adId = res.params.adId;
+			// make entry in statsdb under the same adId
+			client.query(
+				`INSERT INTO ${statsdb} ($1, $2, $3, 0, 0, 0)`,
+				[adId],
+				[adName],
+				[flightId],
+				(err, res) => {
+					if (err) {
+						res.status(500).json({ "status": "failure", err });
+						return;
+					}
+					res.status(200).json({"status": "success", adObjectData });
+				}
+			);
+		}
+	);
 };
 
-// GET request with ad ID at different path which returns a JSON object containing all metadata and image data
-const getAdAtPath = (req, res) => {};
+const updateAd = (req, res) => {
+	res.header("Content-Type", "application/json");
+
+	const adId = req.params.adId;
+	const adName = req.params.adName;
+	const mainText = req.params.mainText;
+	const subText = req.params.subText;
+	const linkText = req.params.linkText;
+	const linkLocation = req.params.linkLocation;
+	const width = req.params.width;
+	const height = req.params.height;
+	const flightId = req.params.flightId;
+	const imageLoc = adName + flightId + ".jpg";
+
+	fs.writeFile(imageLoc, image, function (err) {
+		if (err) {
+			throw err;
+		}
+		console.log("Ad image saved.");
+	});
+
+	const adObjectData = 0;
+
+	client.query(
+		`UPDATE ${addb}
+SET adName = $2, imageLoc = $3,  mainText = $4, subText = $5, linkText = $6, linkLocation = $7, dimensions = $8, flightId = $9
+WHERE (adId = $1)`,
+		[adId],
+		[adName],
+		[imageLoc],
+		[mainText],
+		[subText],
+		[linkText],
+		[linkLocation],
+		[width],
+		[height],
+		[flightId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ "status": "failure", err });
+				return;
+			}
+			adObjectData = result;
+			console.log("Ad image updated.");
+		}
+	);
+
+	client.query(
+		`UPDATE ${statsdb} SET impressions = 0, conversions = 0, clicks = 0 WHERE (adId = $1)`,
+		[adId],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ "status": "failure", err });
+				return;
+			}
+			res.status(200).json({ "status": "success", adObjectData });
+		}
+	);
+};
+
+const getAd = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const adId = req.params.adId;
+
+	client.query(`SELECT * FROM ${addb} where adId = $1`, [adId], (err, res) => {
+		if (err) {
+			res.status(500).json({ "status": "failure", err });
+		}
+		const imageLoc = res.params.imageLoc;
+		const adObjectData = res;
+		http
+			.createServer(function (req, res) {
+				fs.readFile(imageLoc, function (err, data) {
+					res.writeHead(200, { "Content-Type": "text/html" });
+					res.write(data);
+					res.write(adObjectData);
+					return res.end();
+				});
+			})
+			.listen(8080);
+	});
+};
+
+const deleteAd = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const adId = req.params.adId;
+	const imageLoc = req.params.imageLoc;
+	fs.unlink(imageLoc, function (err) {
+		if (err) {
+			throw err;
+		}
+		console.log("Ad image deleted.");
+	});
+
+	client.query(`DELETE FROM ${addb} where adId = $1`, [adId], (err, result) => {
+		if (err) {
+			res.status(500).json({ "status": "failure", err });
+			return;
+		}
+		console.log("Ad deleted from addb");
+	});
+
+	client.query(
+		`DELETE from ${statsdb} WHERE (adId = $1)`,
+		[adId],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ "status": "failure", err });
+				return;
+			}
+			console.log("Ad deleted from addb");
+			res.status(200).json({ "status": "success" });
+		}
+	);
+};
 
 module.exports = {
 	storeAd,
 	updateAd,
-	getAdByName,
-	getAdAtPath,
+	getAd,
+	deleteAd,
 };

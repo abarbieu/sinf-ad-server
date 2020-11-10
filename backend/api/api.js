@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const reportingRoutes = require("./routes/reportingRoutes.js");
+const inventoryRoutes = require("./routes/inventoryRoutes.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const IP = process.env.IP || "localhost";
@@ -27,6 +28,8 @@ app.use(bodyParser.json({ limit: "500mb" }));
 
 app.use("/api/reporting", reportingRoutes);
 
+app.use("/api/inventory", inventoryRoutes);
+
 app.get("/api/", (req, res, next) => {
 	res.header("Content-Type", "application/json");
 	res.status(200).send(
@@ -45,12 +48,35 @@ app.get("/api/", (req, res, next) => {
 	);
 });
 
+// inventory
+app.post("/api/inventory/storeAd", (req, res, next) => {
+	res.header("Content-Type", "application/json");
+	res.status(200).send(req, null, 2);
+});
+
+app.put("/api/inventory/updateAd", (req, res, next) => {
+	res.header("Content-Type", "application/json");
+	res.status(200).send(req, null, 2);
+});
+
+app.get("/api/inventory/getAd", (req, res, next) => {
+	res.header("Content-Type", "application/json");
+	res.status(200).send(req, null, 2);
+});
+
+app.delete("/api/inventory/deleteAd", (req, res, next) => {
+	res.header("Content-Type", "application/json");
+	res.status(200).send(req, null, 2);
+});
+
+// reporting
+
 app.get("/api/reporting/get", (req, res, next) => {
 	res.header("Content-Type", "application/json");
 	res.status(200).send("nothing", null, 2);
 });
 
-app.put("/api/reporting/createItem", (req, res, next) => {
+app.post("/api/reporting/createItem", (req, res, next) => {
 	res.header("Content-Type", "application/json");
 	res.status(200).send("nothing", null, 2);
 });

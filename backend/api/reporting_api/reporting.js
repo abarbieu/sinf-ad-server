@@ -1,48 +1,115 @@
 require("dotenv").config({ path: "../" });
 
 const { Client } = require("pg");
-
 var connectionString = process.env.PG_CXN;
-
 const client = new Client({
 	connectionString: connectionString,
 });
-
 client.connect();
 
-const stats_table = process.env.STATS_TABLE || "stats_table";
-const airlines = process.env.AIRLINES || "airlines";
+const http = require("http");
+const fs = require("fs");
 
-const get = (req, res) => {
-	res.header("Content-Type", "application/json");
-	console.log("getting me");
-	client.query(`SELECT * FROM airlines`, (err, result) => {
-		console.log("query");
-		if (err) {
-			console.log(err);
-			res.status(400).send(err);
-			return;
-		} else {
-			console.log("success");
-			res.status(200).send(result.rows);
-			return;
-		}
-	});
-};
+const statsdb = process.env.STATSDB || "statsdb";
+const addb = process.env.ADDB || "addb";
 
-const createItem = (req, res) => {
+const createEntry = (req, res) => {
 	res.header("Content-Type", "application/json");
+	// insert
+	const adName = req.params.adName;
+	const flightId = req.params.flightId;
 
 	client.query(
-		`INSERT INTO ${airlines} (Id, Airline,  Abbreviation, Country) VALUES (1 , 'United Airlines', 'UAL', 'USA')`,
-		(err, result) => {
+		`SELECT adId from addb where adName = $1`,
+		[adName],
+		(err, res) => {
 			if (err) {
-				res.status(500).json({ err });
+				res.status(500).json({ status: "failure", err });
 				return;
-			} else {
-				res.status(200).send(result);
 			}
+			const adId = res.params.adId;
+			// make entry in statsdb under the same adId
+			client.query(
+				`INSERT INTO ${statsdb} ($1, $2, $3, 0, 0, 0)`,
+				[adId],
+				[adName],
+				[flightId],
+				(err, res) => {
+					if (err) {
+						res.status(500).json({ status: "failure", err });
+						return;
+					}
+					res.status(200).json({ status: "success", adObjectData });
+				}
+			);
 		}
 	);
 };
-module.exports = { createItem, get };
+
+const refreshEntry = (req, res) => {
+	const adId = req.params.adId;
+	client.query(
+		`UPDATE ${statsdb} SET impressions = 0, conversions = 0, clicks = 0 WHERE (adId = $1)`,
+		[adId],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ status: "failure", err });
+				return;
+			}
+			res.status(200).json({ status: "success", adObjectData });
+		}
+	);
+};
+
+const getStats = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const adId = req.params.adId;
+	client.query(
+		`SELECT * FROM ${statsdb} WHERE adId = $1`,
+		[adId],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ status: "failure", err });
+				return;
+			}
+			// export to csv
+			var jsonOutput = {
+				adId: adId,
+				adName: res.params.adName,
+				flightId: res.params.flightId,
+				impressions: res.params.impressions,
+				clicks: res.params.clicks,
+				conversions: res.params.conversions,
+			};
+			const csvOutput = fs.createWriteStream(
+				res.params.adName + res.params.flightId + ".csv"
+			);
+			const request = http.get();
+		}
+	);
+};
+
+const deleteStats = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const adId = req.params.adId;
+	client.query(
+		`DELETE from ${statsdb} WHERE (adId = $1)`,
+		[adId],
+		(err, res) => {
+			if (err) {
+				res.status(500).json({ status: "failure", err });
+				return;
+			}
+			console.log("Ad deleted from addb");
+			res.status(200).json({ status: "success" });
+		}
+	);
+};
+
+module.exports = {
+	createEntry,
+	getStats,
+	refreshEntry,
+	deleteStats,
+	updateStats,
+};
