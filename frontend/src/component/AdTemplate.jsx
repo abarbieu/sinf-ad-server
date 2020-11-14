@@ -2,9 +2,18 @@ import React from 'react'
 import FlowButton from './FlowButton.jsx'
 import placeholder from './img/placeholder.png'
 import FormTemplate from './FormTemplate.jsx'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 export default class AdTemplate extends React.Component{
-    state = {selectedFile: placeholder}
+    state = {
+        selectedFile: placeholder,
+        flight: "",
+        header: "",
+        subtext: "",
+        linkText: "",
+        linkURL: ""
+    }
 
     fileChangedHandler = (e) => {
         const reader = new FileReader();
@@ -16,9 +25,9 @@ export default class AdTemplate extends React.Component{
         reader.readAsDataURL(e.target.files[0])
       };
       
-    uploadHandler = () => {
-        console.log(this.state.selectedFile)
-    }
+      uploadHandler = () => {
+        axios.post('#', this.state)
+      }
 
     
 
@@ -35,7 +44,7 @@ export default class AdTemplate extends React.Component{
                     </div>
                     <FormTemplate />
                     <div style={{marginBottom: '10px', textAlign: 'center'}}>
-                        <FlowButton text='Submit' onClick={this.uploadHandler} w='20vw' h='50px' />
+                        <Link to='/inventory'><FlowButton text='Submit' onClick={this.uploadHandler} w='20vw' h='50px' /></Link>
                     </div>
                 </div>
             </div>
