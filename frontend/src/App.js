@@ -17,7 +17,7 @@ function App() {
           <Route path="/" exact component={FlowGrid} />
           <Route path="/create" exact component={AdTemplate} />
           <Route path="/inventory" exact component={AdGrid} />
-          <Route path="inventory/:id" component={DetailedView} />
+          <Route path="inventory/:id"><DetailedView /></Route>
         </Switch>
 
       </div>

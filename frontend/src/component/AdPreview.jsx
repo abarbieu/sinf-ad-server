@@ -7,7 +7,7 @@ export default function AdPreview(props){
             <h3>{props.header}</h3>
             <p>ID: {props.id}</p>
         </div>
-    <Link to={`/inventory/${props.id}`}><button class='detailsButton'>Details</button></Link>
+        <Link to={`/inventory/${props.id}`}><button className='detailsButton'>Details</button></Link>
     </div>
     )
 }

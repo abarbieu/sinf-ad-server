@@ -1,5 +1,8 @@
 
 
 export default function DetailedView(props){
-    return (<div></div>)
+    console.log("HERE")
+    return (<div>
+        <h1>Hello</h1>
+    </div>)
 }
