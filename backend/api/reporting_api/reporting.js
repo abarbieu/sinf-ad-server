@@ -106,6 +106,7 @@ const deleteStats = (req, res) => {
 	);
 };
 
+const updateStats = (req, res) => {};
 module.exports = {
 	createEntry,
 	getStats,
