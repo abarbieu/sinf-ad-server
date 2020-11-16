@@ -2,13 +2,19 @@ const express = require("express");
 const router = express.Router();
 const db = require("../inventory_api/inventory.js");
 
-// create ad
+// /inventory
 router.post("", db.storeAd);
-// update ad
-router.put("", db.updateAd);
-// get ad
-router.get("", db.getAd);
-// delete ad
-router.delete("", db.deleteAd);
+router.get("", db.getInventory);
+
+// /inventory/adId
+router.get("/:adId", db.getAd);
+router.put("/:adId", db.updateAd);
+router.delete("/:adId", db.deleteAd);
+
+// /inventory/flights
+router.get("/flights", db.getAllFlights);
+router.post("/flights", db.createFlight);
+
+router.get("/flights/:flightId", db.getFlightById);
 
 module.exports = router;

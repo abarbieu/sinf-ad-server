@@ -15,20 +15,20 @@ const statsdb = process.env.STATSDB || "statsdb";
 const storeAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 
-	const image = req.params.image;
-	const adName = req.params.adName;
-	const mainText = req.params.mainText;
-	const subText = req.params.subText;
-	const linkText = req.params.linkText;
-	const linkLocation = req.params.linkLocation;
-	const width = req.params.width;
-	const height = req.params.height;
-	const flightId = req.params.flightId;
+	const image = req.body.image;
+	const adName = req.body.adName;
+	const mainText = req.body.mainText;
+	const subText = req.body.subText;
+	const linkText = req.body.linkText;
+	const linkLocation = req.body.linkLocation;
+	const width = req.body.width;
+	const height = req.body.height;
+	const flightId = req.body.flightId;
 	const imageLoc = adName + flightId + ".jpg";
 
 	fs.writeFile(imageLoc, image, function (err) {
 		if (err) {
-			res.status(500).json({ "status": "failure", req });
+			res.status(500).json({ status: "failure", req });
 			return;
 		}
 		console.log("Ad image saved.");
@@ -49,7 +49,7 @@ const storeAd = (req, res) => {
 		[flightId],
 		(err, result) => {
 			if (err) {
-				res.status(500).json({ "status": "failure", err });
+				res.status(500).json({ status: "failure", err });
 				return;
 			} else {
 				adObjectData = result;
@@ -64,7 +64,7 @@ const storeAd = (req, res) => {
 		[adName],
 		(err, res) => {
 			if (err) {
-				res.status(500).json({ "status": "failure", err });
+				res.status(500).json({ status: "failure", err });
 				return;
 			}
 			const adId = res.params.adId;
@@ -76,28 +76,30 @@ const storeAd = (req, res) => {
 				[flightId],
 				(err, res) => {
 					if (err) {
-						res.status(500).json({ "status": "failure", err });
+						res.status(500).json({ status: "failure", err });
 						return;
 					}
-					res.status(200).json({"status": "success", adObjectData });
+					res.status(200).json({ status: "success", adObjectData });
 				}
 			);
 		}
 	);
 };
 
+const getInventory = (req, res) => {};
+
 const updateAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 
 	const adId = req.params.adId;
-	const adName = req.params.adName;
-	const mainText = req.params.mainText;
-	const subText = req.params.subText;
-	const linkText = req.params.linkText;
-	const linkLocation = req.params.linkLocation;
-	const width = req.params.width;
-	const height = req.params.height;
-	const flightId = req.params.flightId;
+	const adName = req.body.adName;
+	const mainText = req.body.mainText;
+	const subText = req.body.subText;
+	const linkText = req.body.linkText;
+	const linkLocation = req.body.linkLocation;
+	const width = req.body.width;
+	const height = req.body.height;
+	const flightId = req.body.flightId;
 	const imageLoc = adName + flightId + ".jpg";
 
 	fs.writeFile(imageLoc, image, function (err) {
@@ -125,7 +127,7 @@ WHERE (adId = $1)`,
 		[flightId],
 		(err, result) => {
 			if (err) {
-				res.status(500).json({ "status": "failure", err });
+				res.status(500).json({ status: "failure", err });
 				return;
 			}
 			adObjectData = result;
@@ -138,10 +140,10 @@ WHERE (adId = $1)`,
 		[adId],
 		(err, res) => {
 			if (err) {
-				res.status(500).json({ "status": "failure", err });
+				res.status(500).json({ status: "failure", err });
 				return;
 			}
-			res.status(200).json({ "status": "success", adObjectData });
+			res.status(200).json({ status: "success", adObjectData });
 		}
 	);
 };
@@ -152,9 +154,9 @@ const getAd = (req, res) => {
 
 	client.query(`SELECT * FROM ${addb} where adId = $1`, [adId], (err, res) => {
 		if (err) {
-			res.status(500).json({ "status": "failure", err });
+			res.status(500).json({ status: "failure", err });
 		}
-		const imageLoc = res.params.imageLoc;
+		const imageLoc = res.body.imageLoc;
 		const adObjectData = res;
 		http
 			.createServer(function (req, res) {
@@ -172,7 +174,7 @@ const getAd = (req, res) => {
 const deleteAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
-	const imageLoc = req.params.imageLoc;
+	const imageLoc = req.body.imageLoc;
 	fs.unlink(imageLoc, function (err) {
 		if (err) {
 			throw err;
@@ -182,7 +184,7 @@ const deleteAd = (req, res) => {
 
 	client.query(`DELETE FROM ${addb} where adId = $1`, [adId], (err, result) => {
 		if (err) {
-			res.status(500).json({ "status": "failure", err });
+			res.status(500).json({ status: "failure", err });
 			return;
 		}
 		console.log("Ad deleted from addb");
@@ -193,18 +195,28 @@ const deleteAd = (req, res) => {
 		[adId],
 		(err, res) => {
 			if (err) {
-				res.status(500).json({ "status": "failure", err });
+				res.status(500).json({ status: "failure", err });
 				return;
 			}
 			console.log("Ad deleted from addb");
-			res.status(200).json({ "status": "success" });
+			res.status(200).json({ status: "success" });
 		}
 	);
 };
 
+const getAllFlights = (req, res) => {};
+
+const createFlight = (req, res) => {};
+
+const getFlightById = (req, res) => {};
+
 module.exports = {
 	storeAd,
-	updateAd,
+	getInventory,
 	getAd,
+	updateAd,
 	deleteAd,
+	getAllFlights,
+	createFlight,
+	getFlightById,
 };
