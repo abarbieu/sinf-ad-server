@@ -14,9 +14,22 @@
   width: 160px;
   border: none;
   border-radius: 10px;
+}
+
+.detailsAndDelete {
   float: right;
+  width: 250px;
   margin-top: -75px;
-  margin-right: 20px;
+  
+}
+
+.delete {
+  background-color:#ff0000;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  margin-top: 15px;
 }
 
 .detailsButton:hover{

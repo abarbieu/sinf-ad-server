@@ -18,6 +18,7 @@ function App() {
           <Route path="/create" exact component={AdTemplate} />
           <Route path="/inventory" exact component={AdGrid} />
           <Route path="inventory/:id"><DetailedView /></Route>
+          <Route path="/create/flight" exact component={NavBar} />
         </Switch>
 
       </div>
