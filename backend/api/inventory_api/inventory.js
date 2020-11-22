@@ -13,17 +13,18 @@ const addb = process.env.ADDB || "addb";
 const statsdb = process.env.STATSDB || "statsdb";
 
 const storeAd = (req, res) => {
+	console.log("here");
 	res.header("Content-Type", "application/json");
-
+	res.status(200).json({ status: "test" });
 	const image = req.body.image;
-	const adName = req.body.adName;
-	const mainText = req.body.mainText;
-	const subText = req.body.subText;
-	const linkText = req.body.linkText;
-	const linkLocation = req.body.linkLocation;
-	const width = req.body.width;
-	const height = req.body.height;
-	const flightId = req.body.flightId;
+	const adName = req.body.adDataObject.adName;
+	const mainText = req.body.adDataObject.mainText;
+	const subText = req.body.adDataObject.subText;
+	const linkText = req.body.adDataObject.linkText;
+	const linkLoc = req.body.adDataObject.linkLoc;
+	const width = req.body.adDataObject.width;
+	const height = req.body.adDataObject.height;
+	const flightId = req.body.adDataObject.flightId;
 	const imageLoc = adName + flightId + ".jpg";
 
 	fs.writeFile(imageLoc, image, function (err) {
@@ -37,13 +38,13 @@ const storeAd = (req, res) => {
 	const adObjectData = 0;
 
 	client.query(
-		`INSERT INTO ${addb} ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+		`INSERT INTO ${addb} VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		[adName],
 		[imageLoc],
 		[mainText],
 		[subText],
 		[linkText],
-		[linkLocation],
+		[linkLoc],
 		[width],
 		[height],
 		[flightId],
@@ -70,7 +71,7 @@ const storeAd = (req, res) => {
 			const adId = res.params.adId;
 			// make entry in statsdb under the same adId
 			client.query(
-				`INSERT INTO ${statsdb} ($1, $2, $3, 0, 0, 0)`,
+				`INSERT INTO VALUES ${statsdb} ($1, $2, $3, 0, 0, 0)`,
 				[adId],
 				[adName],
 				[flightId],
@@ -86,20 +87,30 @@ const storeAd = (req, res) => {
 	);
 };
 
-const getInventory = (req, res) => {};
+const getInventory = (req, res) => {
+	res.header("Content-Type", "application/json");
+
+	client.query(`SELECT * FROM ${addb}`, (err, result) => {
+		if (err) {
+			res.status(500).json({ status: "failure", err });
+			return;
+		}
+		res.status(200).json({ status: "success", result: result.rows });
+	});
+};
 
 const updateAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 
 	const adId = req.params.adId;
-	const adName = req.body.adName;
-	const mainText = req.body.mainText;
-	const subText = req.body.subText;
-	const linkText = req.body.linkText;
-	const linkLocation = req.body.linkLocation;
-	const width = req.body.width;
-	const height = req.body.height;
-	const flightId = req.body.flightId;
+	const adName = req.body.adDataObject.adName;
+	const mainText = req.body.adDataObject.mainText;
+	const subText = req.body.adDataObject.subText;
+	const linkText = req.body.adDataObject.linkText;
+	const linkLoc = req.body.adDataObject.linkLoc;
+	const width = req.body.adDataObject.width;
+	const height = req.body.adDataObject.height;
+	const flightId = req.body.adDataObject.flightId;
 	const imageLoc = adName + flightId + ".jpg";
 
 	fs.writeFile(imageLoc, image, function (err) {
@@ -113,7 +124,7 @@ const updateAd = (req, res) => {
 
 	client.query(
 		`UPDATE ${addb}
-SET adName = $2, imageLoc = $3,  mainText = $4, subText = $5, linkText = $6, linkLocation = $7, dimensions = $8, flightId = $9
+SET adName = $2, imageLoc = $3,  mainText = $4, subText = $5, linkText = $6, linkLoc = $7, dimensions = $8, flightId = $9
 WHERE (adId = $1)`,
 		[adId],
 		[adName],
@@ -121,7 +132,7 @@ WHERE (adId = $1)`,
 		[mainText],
 		[subText],
 		[linkText],
-		[linkLocation],
+		[linkLoc],
 		[width],
 		[height],
 		[flightId],
@@ -152,19 +163,19 @@ const getAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
 
-	client.query(`SELECT * FROM ${addb} where adId = $1`, [adId], (err, res) => {
-		if (err) {
+	client.query(`SELECT * FROM ${addb} where adId = $1`, [adId], (err, res3) => {
+		if ((err, res3)) {
 			res.status(500).json({ status: "failure", err });
 		}
-		const imageLoc = res.body.imageLoc;
-		const adObjectData = res;
+		const imageLoc = res3.body.adDataObject.imageLoc;
+		const adObjectData = res3.body;
 		http
-			.createServer(function (req, res) {
+			.createServer(function (req, res2) {
 				fs.readFile(imageLoc, function (err, data) {
-					res.writeHead(200, { "Content-Type": "text/html" });
-					res.write(data);
-					res.write(adObjectData);
-					return res.end();
+					res2.writeHead(200, { "Content-Type": "text/html" });
+					res2.write(data);
+					res2.write(adObjectData);
+					return res2.end();
 				});
 			})
 			.listen(8080);
@@ -174,7 +185,7 @@ const getAd = (req, res) => {
 const deleteAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
-	const imageLoc = req.body.imageLoc;
+	const imageLoc = req.body.adDataObject.imageLoc;
 	fs.unlink(imageLoc, function (err) {
 		if (err) {
 			throw err;
@@ -187,28 +198,36 @@ const deleteAd = (req, res) => {
 			res.status(500).json({ status: "failure", err });
 			return;
 		}
-		console.log("Ad deleted from addb");
+		res.status(200).json({ status: "success" });
 	});
+};
 
+const getAllFlights = (req, res) => {
+	res.header("Content-Type", "application/json");
+
+	client.query(`SELECT DISTINCT flightId FROM ${addb}`, (err, result) => {
+		if (err) {
+			res.status(500).json({ status: "failure", err });
+			return;
+		}
+		res.status(200), json({ status: "success", result });
+	});
+};
+
+const getFlightById = (req, res) => {
+	const flightId = req.params.flightId;
 	client.query(
-		`DELETE from ${statsdb} WHERE (adId = $1)`,
-		[adId],
-		(err, res) => {
+		`SELECT * FROM ${addb} WHERE flightId = $1`,
+		[flightId],
+		(err, result) => {
 			if (err) {
 				res.status(500).json({ status: "failure", err });
 				return;
 			}
-			console.log("Ad deleted from addb");
-			res.status(200).json({ status: "success" });
+			res.status(200), json({ status: "success", result });
 		}
 	);
 };
-
-const getAllFlights = (req, res) => {};
-
-const createFlight = (req, res) => {};
-
-const getFlightById = (req, res) => {};
 
 module.exports = {
 	storeAd,
@@ -217,6 +236,5 @@ module.exports = {
 	updateAd,
 	deleteAd,
 	getAllFlights,
-	createFlight,
 	getFlightById,
 };

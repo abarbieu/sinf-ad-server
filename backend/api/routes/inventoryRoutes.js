@@ -13,7 +13,6 @@ router.delete("/:adId", db.deleteAd);
 
 // /inventory/flights
 router.get("/flights", db.getAllFlights);
-router.post("/flights", db.createFlight);
 
 router.get("/flights/:flightId", db.getFlightById);
 
