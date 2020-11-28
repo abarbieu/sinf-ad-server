@@ -6,6 +6,7 @@ const db = require("../reporting_api/reporting.js");
 router.get("/:adId", db.getStats);
 router.post("/:adId", db.createEntry);
 router.put("/:adId", db.updateStats);
+router.delete("/:adId", db.deleteStats);
 
 // /reporting/flightId
 router.get("/:flightId", db.getStatsByFlightId);
