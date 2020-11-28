@@ -96,7 +96,25 @@ const getInventory = (req, res) => {
 			res.status(500).json({ status: "failure4", err });
 			return;
 		}
-		res.status(200).json({ status: "success", result: result.rows });
+		var adDataObjects = [];
+		for (i = 0; i < result.rows.length; i++) {
+			const adDataObject = {
+				adDataObject: {
+					adId: result.rows[i]["adId"],
+					adName: result.rows[i]["adName"],
+					imageLoc: result.rows[i]["imageLoc"],
+					mainText: result.rows[i]["mainText"],
+					subText: result.rows[i]["subText"],
+					linkText: result.rows[i]["linkText"],
+					linkLoc: result.rows[i]["linkLoc"],
+					height: result.rows[i]["height"],
+					width: result.rows[i]["width"],
+					flightId: result.rows[i]["flightId"],
+				},
+			};
+			adDataObjects.push(adDataObject);
+		}
+		res.status(200).json({ status: "success", adDataObjects: adDataObjects });
 	});
 };
 
@@ -157,13 +175,26 @@ const getAd = (req, res) => {
 	client.query(
 		`SELECT * FROM ${addb} where "adId" = $1`,
 		[adId],
-		(err, res3) => {
+		(err, result) => {
 			if (err) {
 				res.status(500).json({ status: "failure8", err });
 				return;
 			}
-			const adObjectData = res3.rows;
-			res.status(200).json({ status: "success", result: adObjectData });
+			const adDataObject = {
+				adDataObject: {
+					adId: result.rows[0]["adId"],
+					adName: result.rows[0]["adName"],
+					imageLoc: result.rows[0]["imageLoc"],
+					mainText: result.rows[0]["mainText"],
+					subText: result.rows[0]["subText"],
+					linkText: result.rows[0]["linkText"],
+					linkLoc: result.rows[0]["linkLoc"],
+					height: result.rows[0]["height"],
+					width: result.rows[0]["width"],
+					flightId: result.rows[0]["flightId"],
+				},
+			};
+			res.status(200).json({ status: "success", adDataObjects: adDataObject });
 		}
 	);
 };
