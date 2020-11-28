@@ -59,11 +59,11 @@ const getStats = (req, res) => {
 			}
 			var jsonOutput = {
 				adId: adId,
-				adName: res2.rows.adName,
-				flightId: res2.rows.flightId,
-				impressions: res2.rows.impressions,
-				clicks: res2.rows.clicks,
-				conversions: res2.rows.conversions,
+				adName: res2.rows[0]["adName"],
+				flightId: res2.rows[0]["flightId"],
+				impressions: res2.rows[0]["impressions"],
+				clicks: res2.rows[0]["clicks"],
+				conversions: res2.rows[0]["conversions"],
 			};
 			res.status(200).json({ status: "success", adStatsObject: jsonOutput });
 		}
