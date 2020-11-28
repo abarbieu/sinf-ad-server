@@ -243,7 +243,7 @@ const getAllFlights = (req, res) => {
 			};
 			flightIds.push(flightId);
 		}
-		res.status(200).json({ status: "success", flightIds: flightId });
+		res.status(200).json({ status: "success", flightIds: flightIds });
 	});
 };
 
