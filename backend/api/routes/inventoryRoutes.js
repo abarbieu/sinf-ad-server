@@ -6,14 +6,13 @@ const db = require("../inventory_api/inventory.js");
 router.post("", db.storeAd);
 router.get("", db.getInventory);
 
-// /inventory/adId
+// /inventory/flights
+router.get("/flights", db.getAllFlights);
+router.get("/flights/:flightId", db.getFlightById);
+
+// /inventory/{adId}
 router.get("/:adId", db.getAd);
 router.put("/:adId", db.updateAd);
 router.delete("/:adId", db.deleteAd);
-
-// /inventory/flights
-router.get("/flights", db.getAllFlights);
-
-router.get("/flights/:flightId", db.getFlightById);
 
 module.exports = router;

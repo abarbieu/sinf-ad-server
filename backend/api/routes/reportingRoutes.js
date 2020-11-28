@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const db = require("../reporting_api/reporting.js");
 
-// /reporting/adId
+// /reporting/{adId}
 router.get("/:adId", db.getStats);
 router.post("/:adId", db.createEntry);
 router.put("/:adId", db.updateStats);
 router.delete("/:adId", db.deleteStats);
 
-// /reporting/flightId
-router.get("/:flightId", db.getStatsByFlightId);
+// /reporting/flights/{flightId}
+router.get("/flights/:flightId", db.getStatsByFlightId);
 
 module.exports = router;

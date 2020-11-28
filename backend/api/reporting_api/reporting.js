@@ -57,16 +57,15 @@ const getStats = (req, res) => {
 				res.status(500).json({ status: "failure", err });
 				return;
 			}
-			// export to csv
-			// var jsonOutput = {
-			// 	adId: adId,
-			// 	adName: res2.body.adName,
-			// 	flightId: res2.body.flightId,
-			// 	impressions: res2.body.impressions,
-			// 	clicks: res2.body.clicks,
-			// 	conversions: res2.body.conversions,
-			// };
-			res.status(200).json({ status: "success", result: res2.rows });
+			var jsonOutput = {
+				adId: adId,
+				adName: res2.rows.adName,
+				flightId: res2.rows.flightId,
+				impressions: res2.rows.impressions,
+				clicks: res2.rows.clicks,
+				conversions: res2.rows.conversions,
+			};
+			res.status(200).json({ status: "success", adStatsObject: jsonOutput });
 		}
 	);
 };
@@ -87,7 +86,37 @@ const deleteStats = (req, res) => {
 	);
 };
 
-const getStatsByFlightId = (req, res) => {};
+const getStatsByFlightId = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const flightId = req.params.flightId;
+	client.query(
+		`SELECT * from ${statsdb} WHERE "flightId" = $1`,
+		[flightId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ status: "failure", err });
+				return;
+			}
+			var adStatsObjects = [];
+			for (i = 0; i < result.rows.length; i++) {
+				var adStatsObject = {
+					adStatsObject: {
+						adId: result.rows[i]["adId"],
+						adName: result.rows[i]["adName"],
+						flightId: result.rows[i]["flightId"],
+						impressions: result.rows[i]["impressions"],
+						clicks: result.rows[i]["clicks"],
+						conversions: result.rows[i]["conversions"],
+					},
+				};
+				adStatsObjects.push(adStatsObject);
+			}
+			res
+				.status(200)
+				.json({ status: "success", adStatsObjects: adStatsObjects });
+		}
+	);
+};
 
 module.exports = {
 	createEntry,

@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "../" });
 
+const axios = require("axios");
 const fs = require("fs");
-const http = require("http");
 const { Client } = require("pg");
 var connectionString = process.env.PG_CXN;
 const client = new Client({
@@ -10,7 +10,6 @@ const client = new Client({
 client.connect();
 
 const addb = process.env.ADDB || "addb";
-const statsdb = process.env.STATSDB || "statsdb";
 
 const storeAd = (req, res) => {
 	res.header("Content-Type", "application/json");
@@ -69,46 +68,14 @@ const storeAd = (req, res) => {
 			var adId = getMax(result.rows, "adId");
 			res.status(200).json({ status: "success1", adId: adId });
 			// make entry in statsdb under the same adId
+			const call = axios.post("http://localhost:8080/api/reporting/" + adId, {
+				adName: adName,
+				flightId: flightId,
+			});
+
+			call.status;
 		}
 	);
-	// replace with axios call later
-	// client.query(
-	// 	`INSERT INTO VALUES ${statsdb} ($1, $2, $3, 0, 0, 0)`,
-	// 	[adId, adName, flightId],
-	// 	(err, result) => {
-	// 		if (err) {
-	// 			res.status(500).json({ status: "failure2", err });
-	// 			return;
-	// 		}
-	// 		res.status(200).json({ status: "success", adObjectData });
-	// 	}
-	// );
-
-	// client.query(
-	// 	`SELECT adId from addb where adName = $1`,
-	// 	[adName],
-	// 	(err, res) => {
-	// 		if (err) {
-	// 			res.status(500).json({ status: "failure", err });
-	// 			return;
-	// 		}
-	// 		const adId = res.params.adId;
-	// 		// make entry in statsdb under the same adId
-	// 		client.query(
-	// 			`INSERT INTO VALUES ${statsdb} ($1, $2, $3, 0, 0, 0)`,
-	// 			[adId],
-	// 			[adName],
-	// 			[flightId],
-	// 			(err, res) => {
-	// 				if (err) {
-	// 					res.status(500).json({ status: "failure", err });
-	// 					return;
-	// 				}
-	// 				res.status(200).json({ status: "success", adObjectData });
-	// 			}
-	// 		);
-	// 	}
-	// );
 };
 
 function getMax(arr, prop) {
@@ -181,19 +148,6 @@ WHERE ("adId" = $1)`,
 			res.status(200).json({ status: "success" });
 		}
 	);
-
-	// replace with axios call
-	// client.query(
-	// 	`UPDATE ${statsdb} SET "impressions" = 0, "conversions" = 0, "clicks" = 0 WHERE ("adId" = $1)`,
-	// 	[adId],
-	// 	(err, res) => {
-	// 		if (err) {
-	// 			res.status(500).json({ status: "failure7", err });
-	// 			return;
-	// 		}
-	// 		res.status(200).json({ status: "success", adObjectData });
-	// 	}
-	// );
 };
 
 const getAd = (req, res) => {
@@ -210,18 +164,6 @@ const getAd = (req, res) => {
 			}
 			const adObjectData = res3.rows;
 			res.status(200).json({ status: "success", result: adObjectData });
-			// const imageLoc = req.body.adDataObject.imageLoc;
-			// const adObjectData = res3.body;
-			// http
-			// 	.createServer(function (req, res2) {
-			// 		fs.readFile(imageLoc, function (err, data) {
-			// 			res2.writeHead(200, { "Content-Type": "text/html" });
-			// 			res2.write(data);
-			// 			res2.write(adObjectData);
-			// 			return res2.end();
-			// 		});
-			// 	})
-			// 	.listen(8080);
 		}
 	);
 };
@@ -232,10 +174,15 @@ const deleteAd = (req, res) => {
 	const imageLoc = __dirname + "/images/" + req.body.adName;
 	fs.unlink(imageLoc, function (err) {
 		if (err) {
-			throw err;
+			res.status(500).json({ status: "failure" });
+			return;
 		}
 		console.log("Ad image deleted.");
 	});
+
+	const call = axios.delete("http://localhost:8080/api/reporting/" + adId);
+
+	call.status;
 
 	client.query(
 		`DELETE FROM ${addb} where "adId" = $1`,
@@ -248,18 +195,6 @@ const deleteAd = (req, res) => {
 			res.status(200).json({ status: "success" });
 		}
 	);
-	// axios
-	// client.query(
-	// 	`DELETE FROM ${statsdb} where "adId" = $1`,
-	// 	[adId],
-	// 	(err, result) => {
-	// 		if (err) {
-	// 			res.status(500).json({ status: "failure10", err });
-	// 			return;
-	// 		}
-	// 		res.status(200).json({ status: "success" });
-	// 	}
-	// );
 };
 
 const getAllFlights = (req, res) => {
@@ -270,7 +205,14 @@ const getAllFlights = (req, res) => {
 			res.status(500).json({ status: "failure11", err });
 			return;
 		}
-		res.status(200), json({ status: "success", result });
+		var flightIds = [];
+		for (i = 0; i < result.rows.length; i++) {
+			const flightId = {
+				flightId: result.rows[i]["flightId"],
+			};
+			flightIds.push(flightId);
+		}
+		res.status(200).json({ status: "success", flightIds: flightId });
 	});
 };
 
@@ -284,7 +226,25 @@ const getFlightById = (req, res) => {
 				res.status(500).json({ status: "failure12", err });
 				return;
 			}
-			res.status(200), json({ status: "success", result });
+			var adDataObjects = [];
+			for (i = 0; i < result.rows.length; i++) {
+				const adDataObject = {
+					adDataObject: {
+						adId: result.rows[i]["adId"],
+						adName: result.rows[i]["adName"],
+						imageLoc: result.rows[i]["imageLoc"],
+						mainText: result.rows[i]["mainText"],
+						subText: result.rows[i]["subText"],
+						linkText: result.rows[i]["linkText"],
+						linkLoc: result.rows[i]["linkLoc"],
+						height: result.rows[i]["height"],
+						width: result.rows[i]["width"],
+						flightId: result.rows[i]["flightId"],
+					},
+				};
+				adDataObjects.push(adDataObject);
+			}
+			res.status(200).json({ status: "success", adDataObjects: adDataObjects });
 		}
 	);
 };
