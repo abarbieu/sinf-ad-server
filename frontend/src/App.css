@@ -1,98 +1,93 @@
 .App {
-  height: 1000px;
-  display: flex;
-  flex-direction: column;
-
+   height: 1000px;
+   display: flex;
+   flex-direction: column;
 }
 
 .detailsButton {
-  font-size: 18px;
-  font-weight: 300;
-  color: #2B6CB3;
-  background-color: white;
-  height: 60px;
-  width: 160px;
-  border: none;
-  border-radius: 8px;
+   font-size: 18px;
+   font-weight: 300;
+   color: #2b6cb3;
+   background-color: white;
+   height: 60px;
+   width: 160px;
+   border: none;
+   border-radius: 8px;
 }
 
 .detailsAndDelete {
-  float: right;
-  width: 250px;
-  margin-top: -75px;
-  
+   float: right;
+   width: 250px;
+   margin-top: -75px;
 }
 
 .delete {
-  background-color:#ff0000;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  border: 1px solid black;
-  margin-top: 15px;
+   background-color: #ff0000;
+   border-radius: 50%;
+   width: 30px;
+   height: 30px;
+   border: 1px solid black;
+   margin-top: 15px;
 }
 
-.detailsButton:hover{
-  animation: buttonAnimation 0.3s ease-in-out;
-  animation-fill-mode: forwards;
-  
+.detailsButton:hover {
+   animation: buttonAnimation 0.3s ease-in-out;
+   animation-fill-mode: forwards;
 }
 
-.flowButton{
-  font-size: 20px;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  background-color: #2B6CB3;
-  margin-bottom: 15px;
+.flowButton {
+   font-size: 20px;
+   border: none;
+   border-radius: 10px;
+   color: #fff;
+   background-color: #2b6cb3;
+   margin-bottom: 15px;
 }
 
-.flowButton:hover{
-  animation: flowButtonAnimation 0.2s ease-in-out;
-  animation-fill-mode: forwards;
+.flowButton:hover {
+   animation: flowButtonAnimation 0.2s ease-in-out;
+   animation-fill-mode: forwards;
 }
 
-.editButton{
-  width: 100px;
-  height: 50px;
-  font-size: 20px;
-  background-color: #fff;
-  color: #2B6CB3;
-  border: 1px solid #2B6CB3;
-  border-radius: 8px;
+.editButton {
+   width: 100px;
+   height: 50px;
+   font-size: 20px;
+   background-color: #fff;
+   color: #2b6cb3;
+   border: 1px solid #2b6cb3;
+   border-radius: 8px;
 }
 
-.editButton:hover{
-  animation: editButtonAnimation 0.2s ease-in-out;
-  animation-fill-mode: forwards;
+.editButton:hover {
+   animation: editButtonAnimation 0.2s ease-in-out;
+   animation-fill-mode: forwards;
 }
 
-.backButton{
-  color: #2B6CB3;
-  background-color: #fff;
-  border: 1px solid #2B6CB3;
-  border-radius: 8px;
+.backButton {
+   color: #2b6cb3;
+   background-color: #fff;
+   border: 1px solid #2b6cb3;
+   border-radius: 8px;
 }
 
-@keyframes editButtonAnimation{
-  100%{
-    background-color: #2B6CB3;
-    color: #fff;
-  }
+@keyframes editButtonAnimation {
+   100% {
+      background-color: #2b6cb3;
+      color: #fff;
+   }
 }
 
-@keyframes flowButtonAnimation{
-
-  100%{
-    background-color: #fff;
-    color: #2B6CB3;
-    border: 2px solid #2B6CB3;
-  }
+@keyframes flowButtonAnimation {
+   100% {
+      background-color: #fff;
+      color: #2b6cb3;
+      border: 2px solid #2b6cb3;
+   }
 }
 
-@keyframes buttonAnimation{
-  100%{
-    font-weight: 400;
-  }
+@keyframes buttonAnimation {
+   100% {
+      font-weight: 400;
+   }
 }
-
