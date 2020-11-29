@@ -118,10 +118,37 @@ const getStatsByFlightId = (req, res) => {
 	);
 };
 
+const getSummedStats = (req, res) => {
+	res.header("Content-Type", "application/json");
+	const flightId = req.params.flightId;
+	client.query(
+		`SELECT sum("impressions") as impressions, sum("clicks") as clicks, sum("conversions") as conversions from ${statsdb} GROUP BY "flightId" having "flightId" = $1`,
+		[flightId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ status: "failure", err });
+				return;
+			}
+				var summedAdsObject = {
+					 
+						flightId: flightId,
+						impressions: result.rows[0]["impressions"],
+						clicks: result.rows[0]["clicks"],
+						conversions: result.rows[0]["conversions"],
+					
+				};
+			res
+				.status(200)
+				.json({ status: "success", summedAdsObject: summedAdsObject });
+		}
+	);
+};
+
 module.exports = {
 	createEntry,
 	getStats,
 	updateStats,
 	getStatsByFlightId,
 	deleteStats,
+	getSummedStats,
 };
