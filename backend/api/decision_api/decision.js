@@ -34,7 +34,6 @@ const getAdByFlight = (req, res) => {
             console.log("\n");
 			const randInt = getRndInteger(0, result.rows.length -1);
 				const adDataObject = {
-					adDataObject: {
 						adId: result.rows[randInt]["adId"],
 						adName: result.rows[randInt]["adName"],
 						imageLoc: result.rows[randInt]["imageLoc"],
@@ -45,7 +44,6 @@ const getAdByFlight = (req, res) => {
 						height: result.rows[randInt]["height"],
 						width: result.rows[randInt]["width"],
 						flightId: result.rows[randInt]["flightId"],
-					},
 				};
 			res.status(200).json({ status: "success", adDataObject: adDataObject });
 		}

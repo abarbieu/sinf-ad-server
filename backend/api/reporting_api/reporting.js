@@ -129,17 +129,17 @@ const getSummedStats = (req, res) => {
 				res.status(500).json({ status: "failure", err });
 				return;
 			}
-				var adStatsObject = {
-					adStatsObject: {
+				var summedAdsObject = {
+					 
 						flightId: flightId,
 						impressions: result.rows[0]["impressions"],
 						clicks: result.rows[0]["clicks"],
 						conversions: result.rows[0]["conversions"],
-					},
+					
 				};
 			res
 				.status(200)
-				.json({ status: "success", adStatsObject: adStatsObject });
+				.json({ status: "success", summedAdsObject: summedAdsObject });
 		}
 	);
 };
