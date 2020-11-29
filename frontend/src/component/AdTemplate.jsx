@@ -173,7 +173,8 @@ export default class AdTemplate extends React.Component {
                   </button>
                </div>
             </Modal>
-
+            
+            
             <div
                style={{
                   display: "flex",

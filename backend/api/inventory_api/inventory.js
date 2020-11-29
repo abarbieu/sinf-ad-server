@@ -1,8 +1,19 @@
 require("dotenv").config({ path: "../" });
 
+const http = require("http");
+const nStatic = require("node-static");
+const fileServer = new nStatic.Server("./public");
+
+http
+   .createServer(function (req, res) {
+      fileServer.serve(req, res);
+   })
+   .listen(8080);
+
 const axios = require("axios");
 const fs = require("fs");
 const { Client } = require("pg");
+const { env } = require("process");
 var connectionString = process.env.PG_CXN;
 const client = new Client({
    connectionString: connectionString,
@@ -19,13 +30,12 @@ const storeAd = (req, res) => {
    const subText = req.body.adDataObject.subText;
    const linkText = req.body.adDataObject.linkText;
    const linkLoc = req.body.adDataObject.linkLoc;
-   console.log("adDataObject: ", req.body.adDataObject);
    const width = req.body.adDataObject.width;
    const height = req.body.adDataObject.height;
    const flightId = req.body.adDataObject.flightId;
-   const imageLoc = __dirname + "/images/" + adName;
-   console.log(imageLoc);
-   fs.writeFile(imageLoc, image, function (err) {
+   const localStore = "../../public/" + adName;
+   const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+   fs.writeFile(localStore, image, function (err) {
       if (err) {
          res.status(500).json({ status: "failure1", req });
          return;
@@ -133,10 +143,11 @@ const updateAd = (req, res) => {
    const width = req.body.adDataObject.width;
    const height = req.body.adDataObject.height;
    const flightId = req.body.adDataObject.flightId;
-   const imageLoc = __dirname + "/images/" + adName;
+   const localStore = "../../public/" + adName;
+   const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
    const image = req.body.image;
 
-   fs.writeFile(imageLoc, image, function (err) {
+   fs.writeFile(localStore, image, function (err) {
       if (err) {
          res.status(500).json({ status: "failure5", err });
          return;
@@ -184,23 +195,18 @@ const getAd = (req, res) => {
             return;
          }
          const adDataObject = {
-            adDataObject: {
-               adId: result.rows[0]["adId"],
-               adName: result.rows[0]["adName"],
-               imageLoc: result.rows[0]["imageLoc"],
-               mainText: result.rows[0]["mainText"],
-               subText: result.rows[0]["subText"],
-               linkText: result.rows[0]["linkText"],
-               linkLoc: result.rows[0]["linkLoc"],
-               height: result.rows[0]["height"],
-               width: result.rows[0]["width"],
-               flightId: result.rows[0]["flightId"],
-            },
+            adId: result.rows[0]["adId"],
+            adName: result.rows[0]["adName"],
+            imageLoc: result.rows[0]["imageLoc"],
+            mainText: result.rows[0]["mainText"],
+            subText: result.rows[0]["subText"],
+            linkText: result.rows[0]["linkText"],
+            linkLoc: result.rows[0]["linkLoc"],
+            height: result.rows[0]["height"],
+            width: result.rows[0]["width"],
+            flightId: result.rows[0]["flightId"],
          };
-         res.status(200).json({
-            status: "success",
-            adDataObjects: adDataObject,
-         });
+         res.status(200).json({ status: "success", adDataObject });
       }
    );
 };
@@ -208,10 +214,11 @@ const getAd = (req, res) => {
 const deleteAd = (req, res) => {
    res.header("Content-Type", "application/json");
    const adId = req.params.adId;
-   const imageLoc = __dirname + "/images/" + req.body.adName;
-   fs.unlink(imageLoc, function (err) {
+   const localStore = "../../public/" + adName;
+   const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+   fs.unlink(localStore, function (err) {
       if (err) {
-         res.status(500).json({ status: "failure" });
+         res.status(500).json({ status: "failure20", err });
          return;
       }
       console.log("Ad image deleted.");

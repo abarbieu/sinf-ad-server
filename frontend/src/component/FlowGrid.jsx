@@ -19,7 +19,7 @@ export default function FlowGrid(props) {
          <Link to='/inventory'>
             <FlowButton text='Inventory' w='50vw' h='70px' />
          </Link>
-         <Link to='/statistics'>
+         <Link to='/report'>
             <FlowButton text='Campaign Statistics' w='50vw' h='70px' />
          </Link>
       </div>
