@@ -37,17 +37,17 @@ export default class FormTemplate extends Component {
             </Dropdown.Toggle>          
 
             <Dropdown.Menu>
-                {/* {
-                    this.state.flights.map(f => {
-                        <Dropdown.Item onClick={this.updateText(f)}>{f}</Dropdown.Item>
-                    })
-                } */}
                 <Dropdown.Item onClick={() => {
-                    this.props.flight('Test')
-                    this.setState({button: 'Test'})
+                    this.props.flight('Mobile')
+                    this.setState({button: 'Mobile'})
                     }}>
-                        Test</Dropdown.Item>
-                <Dropdown.Item> + </Dropdown.Item>
+                        Mobile</Dropdown.Item>
+
+            <Dropdown.Item onClick={() => {
+                this.props.flight('Desktop')
+                this.setState({button: 'Desktop'})
+                }}>
+                    Desktop</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
 
