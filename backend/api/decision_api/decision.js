@@ -25,28 +25,29 @@ const getAdByFlight = (req, res) => {
             }
             console.log(result.rows);
             console.log("\n");
-			var adDataObjects = [];
-			for (i = 0; i < result.rows.length; i++) {
+			const randInt = getRndInteger(0, result.rows.length -1);
 				const adDataObject = {
 					adDataObject: {
-						adId: result.rows[i]["adId"],
-						adName: result.rows[i]["adName"],
-						imageLoc: result.rows[i]["imageLoc"],
-						mainText: result.rows[i]["mainText"],
-						subText: result.rows[i]["subText"],
-						linkText: result.rows[i]["linkText"],
-						linkLoc: result.rows[i]["linkLoc"],
-						height: result.rows[i]["height"],
-						width: result.rows[i]["width"],
-						flightId: result.rows[i]["flightId"],
+						adId: result.rows[randInt]["adId"],
+						adName: result.rows[randInt]["adName"],
+						imageLoc: result.rows[randInt]["imageLoc"],
+						mainText: result.rows[randInt]["mainText"],
+						subText: result.rows[randInt]["subText"],
+						linkText: result.rows[randInt]["linkText"],
+						linkLoc: result.rows[randInt]["linkLoc"],
+						height: result.rows[randInt]["height"],
+						width: result.rows[randInt]["width"],
+						flightId: result.rows[randInt]["flightId"],
 					},
 				};
-				adDataObjects.push(adDataObject);
-			}
-			res.status(200).json({ status: "success", adDataObjects: adDataObjects });
+			res.status(200).json({ status: "success", adDataObject: adDataObject });
 		}
 	);
 };
+function getRndInteger(min, max) {
+	return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+  
 
 
 module.exports = {
