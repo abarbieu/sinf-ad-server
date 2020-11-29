@@ -15,7 +15,9 @@ export default function NavButtonCluster(props) {
          <Link to='/'>
             <NavButton text='Home' />
          </Link>
-         <NavButton text='Help' />
+         <a href='https://github.com/abarbieu/sinf-ad-server/'>
+            <NavButton text='Help' />
+         </a>
       </div>
    );
 }
