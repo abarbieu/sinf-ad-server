@@ -11,8 +11,15 @@ const addb = process.env.ADDB || "addb";
 
 
 const getAdByFlight = (req, res) => {
-    const flightId = req.body.flightId;
-    const zoneSize = req.body.zoneSize;
+    const deviceType = req.body.deviceType;
+	const zoneSize = req.body.zoneSize;
+	var flightId = 0;
+	if (deviceType === "Mobile"){
+		flightId = 1;
+	}
+	else if (deviceType === "Desktop"){
+		flightId = 2;
+	}
     console.log(flightId);
     console.log(zoneSize);
 	client.query(
