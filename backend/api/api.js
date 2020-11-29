@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const reportingRoutes = require("./routes/reportingRoutes.js");
 const inventoryRoutes = require("./routes/inventoryRoutes.js");
+const decisionRoutes = require("./routes/decisionRoutes.js");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const IP = process.env.IP || "localhost";
@@ -27,8 +28,11 @@ app.use(
 app.use(bodyParser.json({ limit: "500mb" }));
 
 app.use("/api/reporting/", reportingRoutes);
+app.use("/api/decide/", decisionRoutes);
 
 app.use("/api/inventory/", inventoryRoutes);
+
+app.use(express.static("public"));
 
 app.get("/api/", (req, res, next) => {
 	res.header("Content-Type", "application/json");

@@ -25,6 +25,7 @@
       "geoip-lite": "^1.4.2",
       "moment": "^2.29.1",
       "moment-timezone": "^0.5.31",
+      "node-static": "^0.7.11",
       "nodemailer": "^6.4.15",
       "pg": "^8.4.2",
       "xoauth2": "^1.2.0"

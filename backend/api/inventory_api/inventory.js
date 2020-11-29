@@ -1,8 +1,19 @@
 require("dotenv").config({ path: "../" });
 
-const fs = require("fs");
 const http = require("http");
+const nStatic = require("node-static");
+const fileServer = new nStatic.Server("./public");
+
+http
+	.createServer(function (req, res) {
+		fileServer.serve(req, res);
+	})
+	.listen(8080);
+
+const axios = require("axios");
+const fs = require("fs");
 const { Client } = require("pg");
+const { env } = require("process");
 var connectionString = process.env.PG_CXN;
 const client = new Client({
 	connectionString: connectionString,
@@ -10,12 +21,9 @@ const client = new Client({
 client.connect();
 
 const addb = process.env.ADDB || "addb";
-const statsdb = process.env.STATSDB || "statsdb";
 
 const storeAd = (req, res) => {
-	console.log("here");
 	res.header("Content-Type", "application/json");
-	res.status(200).json({ status: "test" });
 	const image = req.body.image;
 	const adName = req.body.adDataObject.adName;
 	const mainText = req.body.adDataObject.mainText;
@@ -25,77 +33,98 @@ const storeAd = (req, res) => {
 	const width = req.body.adDataObject.width;
 	const height = req.body.adDataObject.height;
 	const flightId = req.body.adDataObject.flightId;
-	const imageLoc = adName + flightId + ".jpg";
-
-	fs.writeFile(imageLoc, image, function (err) {
+	const localStore = "../../public/" + adName;
+	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+	fs.writeFile(localStore, image, function (err) {
 		if (err) {
-			res.status(500).json({ status: "failure", req });
+			res.status(500).json({ status: "failure1", req });
 			return;
 		}
 		console.log("Ad image saved.");
 	});
 
-	const adObjectData = 0;
-
 	client.query(
-		`INSERT INTO ${addb} VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		[adName],
-		[imageLoc],
-		[mainText],
-		[subText],
-		[linkText],
-		[linkLoc],
-		[width],
-		[height],
-		[flightId],
+		`INSERT INTO addb ("adName", "imageLoc", "mainText", "subText", "linkText", "linkLocation", "width", "height", "flightId") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+		[
+			adName,
+			imageLoc,
+			mainText,
+			subText,
+			linkText,
+			linkLoc,
+			width,
+			height,
+			flightId,
+		],
 		(err, result) => {
 			if (err) {
-				res.status(500).json({ status: "failure", err });
+				res.status(500).json({ status: "failure3", err });
 				return;
 			} else {
-				adObjectData = result;
 				console.log("Ad images inserted into addb");
 			}
 		}
 	);
 
-	// get ad id from addb
 	client.query(
-		`SELECT adId from addb where adName = $1`,
+		`SELECT "adId" from ${addb} where "adName" = $1`,
 		[adName],
-		(err, res) => {
+		(err, result) => {
 			if (err) {
 				res.status(500).json({ status: "failure", err });
 				return;
 			}
-			const adId = res.params.adId;
+			console.log(result.rows);
+			var adId = getMax(result.rows, "adId");
+			res.status(200).json({ status: "success1", adId: adId });
 			// make entry in statsdb under the same adId
-			client.query(
-				`INSERT INTO VALUES ${statsdb} ($1, $2, $3, 0, 0, 0)`,
-				[adId],
-				[adName],
-				[flightId],
-				(err, res) => {
-					if (err) {
-						res.status(500).json({ status: "failure", err });
-						return;
-					}
-					res.status(200).json({ status: "success", adObjectData });
-				}
-			);
+			const call = axios.post("http://localhost:8080/api/reporting/" + adId, {
+				adName: adName,
+				flightId: flightId,
+			});
+
+			call.status;
 		}
 	);
 };
+
+function getMax(arr, prop) {
+	var max;
+	for (var i = 0; i < arr.length; i++) {
+		if (max == null || parseInt(arr[i][prop]) > max) {
+			max = arr[i][prop];
+		}
+	}
+	return max;
+}
 
 const getInventory = (req, res) => {
 	res.header("Content-Type", "application/json");
 
 	client.query(`SELECT * FROM ${addb}`, (err, result) => {
 		if (err) {
-			res.status(500).json({ status: "failure", err });
+			res.status(500).json({ status: "failure4", err });
 			return;
 		}
-		res.status(200).json({ status: "success", result: result.rows });
+		var adDataObjects = [];
+		for (i = 0; i < result.rows.length; i++) {
+			const adDataObject = {
+				adDataObject: {
+					adId: result.rows[i]["adId"],
+					adName: result.rows[i]["adName"],
+					imageLoc: result.rows[i]["imageLoc"],
+					mainText: result.rows[i]["mainText"],
+					subText: result.rows[i]["subText"],
+					linkText: result.rows[i]["linkText"],
+					linkLoc: result.rows[i]["linkLoc"],
+					height: result.rows[i]["height"],
+					width: result.rows[i]["width"],
+					flightId: result.rows[i]["flightId"],
+				},
+			};
+			adDataObjects.push(adDataObject);
+		}
+		res.status(200).json({ status: "success", adDataObjects: adDataObjects });
 	});
 };
 
@@ -111,50 +140,41 @@ const updateAd = (req, res) => {
 	const width = req.body.adDataObject.width;
 	const height = req.body.adDataObject.height;
 	const flightId = req.body.adDataObject.flightId;
-	const imageLoc = adName + flightId + ".jpg";
+	const localStore = "../../public/" + adName;
+	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+	const image = req.body.image;
 
-	fs.writeFile(imageLoc, image, function (err) {
+	fs.writeFile(localStore, image, function (err) {
 		if (err) {
-			throw err;
+			res.status(500).json({ status: "failure5", err });
+			return;
 		}
-		console.log("Ad image saved.");
+		console.log("Ad image updated.");
 	});
-
-	const adObjectData = 0;
 
 	client.query(
 		`UPDATE ${addb}
-SET adName = $2, imageLoc = $3,  mainText = $4, subText = $5, linkText = $6, linkLoc = $7, dimensions = $8, flightId = $9
-WHERE (adId = $1)`,
-		[adId],
-		[adName],
-		[imageLoc],
-		[mainText],
-		[subText],
-		[linkText],
-		[linkLoc],
-		[width],
-		[height],
-		[flightId],
+SET "adName" = $2, "imageLoc" = $3,  "mainText" = $4, "subText" = $5, "linkText" = $6, "linkLocation" = $7, "width" = $8, "height" = $9, "flightId" = $10
+WHERE ("adId" = $1)`,
+		[
+			adId,
+			adName,
+			imageLoc,
+			mainText,
+			subText,
+			linkText,
+			linkLoc,
+			width,
+			height,
+			flightId,
+		],
 		(err, result) => {
 			if (err) {
-				res.status(500).json({ status: "failure", err });
+				res.status(500).json({ status: "failure6", err });
 				return;
 			}
-			adObjectData = result;
 			console.log("Ad image updated.");
-		}
-	);
-
-	client.query(
-		`UPDATE ${statsdb} SET impressions = 0, conversions = 0, clicks = 0 WHERE (adId = $1)`,
-		[adId],
-		(err, res) => {
-			if (err) {
-				res.status(500).json({ status: "failure", err });
-				return;
-			}
-			res.status(200).json({ status: "success", adObjectData });
+			res.status(200).json({ status: "success" });
 		}
 	);
 };
@@ -163,68 +183,109 @@ const getAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
 
-	client.query(`SELECT * FROM ${addb} where adId = $1`, [adId], (err, res3) => {
-		if ((err, res3)) {
-			res.status(500).json({ status: "failure", err });
+	client.query(
+		`SELECT * FROM ${addb} where "adId" = $1`,
+		[adId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ status: "failure8", err });
+				return;
+			}
+			const adDataObject = {
+				adId: result.rows[0]["adId"],
+				adName: result.rows[0]["adName"],
+				imageLoc: result.rows[0]["imageLoc"],
+				mainText: result.rows[0]["mainText"],
+				subText: result.rows[0]["subText"],
+				linkText: result.rows[0]["linkText"],
+				linkLoc: result.rows[0]["linkLoc"],
+				height: result.rows[0]["height"],
+				width: result.rows[0]["width"],
+				flightId: result.rows[0]["flightId"],
+			};
+			res.status(200).json({ status: "success", adDataObject });
 		}
-		const imageLoc = res3.body.adDataObject.imageLoc;
-		const adObjectData = res3.body;
-		http
-			.createServer(function (req, res2) {
-				fs.readFile(imageLoc, function (err, data) {
-					res2.writeHead(200, { "Content-Type": "text/html" });
-					res2.write(data);
-					res2.write(adObjectData);
-					return res2.end();
-				});
-			})
-			.listen(8080);
-	});
+	);
 };
 
 const deleteAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
-	const imageLoc = req.body.adDataObject.imageLoc;
-	fs.unlink(imageLoc, function (err) {
+	const localStore = "../../public/" + adName;
+	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+	fs.unlink(localStore, function (err) {
 		if (err) {
-			throw err;
+			res.status(500).json({ status: "failure20", err });
+			return;
 		}
 		console.log("Ad image deleted.");
 	});
 
-	client.query(`DELETE FROM ${addb} where adId = $1`, [adId], (err, result) => {
-		if (err) {
-			res.status(500).json({ status: "failure", err });
-			return;
+	const call = axios.delete("http://localhost:8080/api/reporting/" + adId);
+
+	call.status;
+
+	client.query(
+		`DELETE FROM ${addb} where "adId" = $1`,
+		[adId],
+		(err, result) => {
+			if (err) {
+				res.status(500).json({ status: "failure9", err });
+				return;
+			}
+			res.status(200).json({ status: "success" });
 		}
-		res.status(200).json({ status: "success" });
-	});
+	);
 };
 
 const getAllFlights = (req, res) => {
 	res.header("Content-Type", "application/json");
 
-	client.query(`SELECT DISTINCT flightId FROM ${addb}`, (err, result) => {
+	client.query(`SELECT DISTINCT "flightId" FROM ${addb}`, (err, result) => {
 		if (err) {
-			res.status(500).json({ status: "failure", err });
+			res.status(500).json({ status: "failure11", err });
 			return;
 		}
-		res.status(200), json({ status: "success", result });
+		var flightIds = [];
+		for (i = 0; i < result.rows.length; i++) {
+			const flightId = {
+				flightId: result.rows[i]["flightId"],
+			};
+			flightIds.push(flightId);
+		}
+		res.status(200).json({ status: "success", flightIds: flightIds });
 	});
 };
 
 const getFlightById = (req, res) => {
 	const flightId = req.params.flightId;
 	client.query(
-		`SELECT * FROM ${addb} WHERE flightId = $1`,
+		`SELECT * FROM ${addb} WHERE "flightId" = $1`,
 		[flightId],
 		(err, result) => {
 			if (err) {
-				res.status(500).json({ status: "failure", err });
+				res.status(500).json({ status: "failure12", err });
 				return;
 			}
-			res.status(200), json({ status: "success", result });
+			var adDataObjects = [];
+			for (i = 0; i < result.rows.length; i++) {
+				const adDataObject = {
+					adDataObject: {
+						adId: result.rows[i]["adId"],
+						adName: result.rows[i]["adName"],
+						imageLoc: result.rows[i]["imageLoc"],
+						mainText: result.rows[i]["mainText"],
+						subText: result.rows[i]["subText"],
+						linkText: result.rows[i]["linkText"],
+						linkLoc: result.rows[i]["linkLoc"],
+						height: result.rows[i]["height"],
+						width: result.rows[i]["width"],
+						flightId: result.rows[i]["flightId"],
+					},
+				};
+				adDataObjects.push(adDataObject);
+			}
+			res.status(200).json({ status: "success", adDataObjects: adDataObjects });
 		}
 	);
 };
