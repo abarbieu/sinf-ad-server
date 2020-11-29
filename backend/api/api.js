@@ -32,6 +32,8 @@ app.use("/api/decide/", decisionRoutes);
 
 app.use("/api/inventory/", inventoryRoutes);
 
+app.use(express.static("public"));
+
 app.get("/api/", (req, res, next) => {
 	res.header("Content-Type", "application/json");
 	res.status(200).send(
