@@ -10,5 +10,6 @@ router.delete("/:adId", db.deleteStats);
 
 // /reporting/flights/{flightId}
 router.get("/flights/:flightId", db.getStatsByFlightId);
+router.get("/sum/:flightId", db.getSummedStats);
 
 module.exports = router;

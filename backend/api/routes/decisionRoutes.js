@@ -4,5 +4,4 @@ const db = require("../decision_api/decision.js");
 
 router.get("", db.getAdByFlight);
 
-
 module.exports = router;
