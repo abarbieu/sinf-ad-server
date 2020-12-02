@@ -2,6 +2,7 @@ require("dotenv").config({ path: "../" });
 
 const { Client } = require("pg");
 const config = {
+   connectionString: process.env.PG_CXN,
    database: process.env.PGDATABASE,
    host: process.env.PGHOST,
    ssl: { rejectUnauthorized: false },

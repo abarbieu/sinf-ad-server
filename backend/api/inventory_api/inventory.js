@@ -5,6 +5,7 @@ const fs = require("fs");
 const { Client } = require("pg");
 const { env } = require("process");
 const config = {
+   connectionString: process.env.PG_CXN,
    database: process.env.PGDATABASE,
    host: process.env.PGHOST,
    ssl: { rejectUnauthorized: false },
