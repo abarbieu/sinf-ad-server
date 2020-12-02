@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import DetailedView from "./component/DetailedView.jsx";
 import ShowReport from "./component/ShowReport.jsx";
 import EditView from "./component/EditView.jsx";
+import axios from "axios";
 
 function App() {
    const notFound = () => {
