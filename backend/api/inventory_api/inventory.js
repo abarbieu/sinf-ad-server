@@ -1,14 +1,14 @@
 require("dotenv").config({ path: "../" });
 
-const http = require("http");
-const nStatic = require("node-static");
-const fileServer = new nStatic.Server("./public");
+// const http = require("http");
+// const nStatic = require("node-static");
+// const fileServer = new nStatic.Server("./public");
 
-http
-   .createServer(function (req, res) {
-      fileServer.serve(req, res);
-   })
-   .listen(8080);
+// http
+//    .createServer(function (req, res) {
+//       fileServer.serve(req, res);
+//    })
+//    .listen(8080);
 
 const axios = require("axios");
 const fs = require("fs");
@@ -34,7 +34,7 @@ const storeAd = (req, res) => {
    const height = req.body.adDataObject.height;
    const flightId = req.body.adDataObject.flightId;
    const localStore = "../../public/" + adName;
-   const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+   const imageLoc = "http://localhost:" + env.PORT + "/api/images/" + adName;
    fs.writeFile(localStore, image, function (err) {
       if (err) {
          res.status(500).json({ status: "failure1", req });
