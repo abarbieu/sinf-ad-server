@@ -8,7 +8,7 @@ export default function EditView(props){
     const ad = props.location.state.adObj
     const [adInfo, setAdInfo] = useState(
         {
-            image: ad.image,
+            imageLoc: ad.imageLoc,
             flightId: ad.flightId,
             adName: ad.adName,
             mainText: ad.mainText,
@@ -25,7 +25,7 @@ export default function EditView(props){
   
         reader.onload = () => {
            if (reader.readyState === 2) {
-              setAdInfo({ image: reader.result });
+              setAdInfo({ imageLoc: reader.result });
   
               var image = new Image();
               image.src = reader.result;
@@ -41,7 +41,7 @@ export default function EditView(props){
     const uploadHandler = () => {
         if (
            adInfo.adName !== "" &&
-           adInfo.image !== "" &&
+           adInfo.imageLoc !== "" &&
            adInfo.mainText !== "" &&
            adInfo.subText !== "" &&
            adInfo.linkText !== "" &&
@@ -50,7 +50,7 @@ export default function EditView(props){
         ) {
            axios
               .put(`/api/inventory/${ad.adId}`, {
-                 image: adInfo.image,
+                 imageLoc: adInfo.imageLoc,
                  adDataObject: {
                     adName: adInfo.adName,
                     mainText: adInfo.mainText,
@@ -106,11 +106,11 @@ export default function EditView(props){
             <div style={{ margin: "30px 0 10px 0" }}>
                 <input
                 type='file'
-                accept='image/x-png,image/gif,image/jpeg'
+                accept='image/x-png,image/gif,image/jpg'
                 onChange={fileChangedHandler}
                 />
             </div>
-            <img style={{border: '2px solid #2B6CB3', marginBottom: '20px'}} src={adInfo.image} alt='' />
+            <img style={{border: '2px solid #2B6CB3', marginBottom: '20px'}} src={adInfo.imageLoc} alt='' />
             
             <Dropdown>
                 <Dropdown.Toggle variant="warning" id="dropdown-basic">

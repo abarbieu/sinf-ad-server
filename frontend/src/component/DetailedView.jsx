@@ -28,7 +28,7 @@ export default function DetailedView(props) {
          <h3>Flight: {ad.flightId}</h3>
          <img
             style={{ border: "2px solid #2B6CB3", marginBottom: "20px" }}
-            src={ad.image}
+            src={ad.imageLoc}
             alt=''
          />
          <h3>Main text: {ad.mainText}</h3>
