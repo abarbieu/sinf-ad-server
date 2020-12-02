@@ -20,23 +20,13 @@ export default class AdTemplate extends React.Component {
          modalState: false,
          errState: "",
          msgColor: "red",
+         url: "http://localhost:8080/",
       };
+
    }
 
-   getFlights = async () => {
-      axios
-         .get("api/inventory/flights")
-         .catch((err) => {
-            console.error(err);
-         })
-         .then
-         //console.log('Flights loaded successfully')
-         ();
-   };
+   
 
-   // const [ adContents, setAdContents ] = useState(s)
-   // const [ modalState, setModalState ] = useState(false)
-   // const [ errState, setErrState ] = useState("")
 
    fileChangedHandler = (e) => {
       const reader = new FileReader();
@@ -68,7 +58,7 @@ export default class AdTemplate extends React.Component {
          this.state.flightId !== ""
       ) {
          axios
-            .post("/api/inventory", {
+            .post(this.state.url+"api/inventory", {
                image: this.state.image,
                adDataObject: {
                   adName: this.state.adName,
@@ -82,7 +72,7 @@ export default class AdTemplate extends React.Component {
                },
             })
             .then(() => {
-               this.setState({ errState: "Success", msgColor: "green" });
+               this.setState({ errState: "Success", msgColor: "green", modalState: false });
             })
             .catch((err) => {
                this.setState({ modalState: false });

@@ -15,17 +15,7 @@ export default class FormTemplate extends Component {
          // linkText: "",
          // linkLocation: "",
          button: "Select a flight",
-         flights: [],
       };
-   }
-
-   componentDidMount() {
-      this.setState({
-         flights: axios
-            .get("api/inventory/flights")
-            .catch((err) => console.error(err))
-            .then(console.log("Flights received")),
-      });
    }
 
    render() {
@@ -40,20 +30,20 @@ export default class FormTemplate extends Component {
                <Dropdown.Menu>
                   <Dropdown.Item
                      onClick={() => {
-                        this.props.flight("Mobile");
-                        this.setState({ button: "Mobile" });
+                        this.props.flight("1");
+                        this.setState({ button: "1" });
                      }}
                   >
-                     Mobile
+                     1
                   </Dropdown.Item>
 
                   <Dropdown.Item
                      onClick={() => {
-                        this.props.flight("Desktop");
-                        this.setState({ button: "Desktop" });
+                        this.props.flight("2");
+                        this.setState({ button: "2" });
                      }}
                   >
-                     Desktop
+                     2
                   </Dropdown.Item>
                </Dropdown.Menu>
             </Dropdown>

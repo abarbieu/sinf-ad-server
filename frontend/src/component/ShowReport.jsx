@@ -14,10 +14,10 @@ export default function ShowReport(props) {
       conversions: 0,
    });
 
-   const reportPath = "localhost:3000/reporting";
+   const reportPath = "http://localhost:8080/reporting";
 
    axios
-      .get(reportPath + "/desktop")
+      .get(reportPath + "/2")
       .then((res) => {
          updateReportDesktop({
             impressions: res.params.impressions,
@@ -28,7 +28,7 @@ export default function ShowReport(props) {
       .catch((err) => console.error(err));
 
    axios
-      .get(reportPath + "/mobile")
+      .get(reportPath + "/1")
       .then((res) => {
          updateReportMobile({
             impressions: res.params.impressions,

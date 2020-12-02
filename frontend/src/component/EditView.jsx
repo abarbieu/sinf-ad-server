@@ -119,14 +119,14 @@ export default function EditView(props){
 
                 <Dropdown.Menu>
                     <Dropdown.Item onClick={() => {
-                        updateFlightState('Mobile')
+                        updateFlightState('1')
                         }}>
-                            Mobile</Dropdown.Item>
+                            1</Dropdown.Item>
 
                     <Dropdown.Item onClick={() => {
-                        updateFlightState('Desktop')
+                        updateFlightState('2')
                         }}>
-                            Desktop</Dropdown.Item>
+                            2</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
 
