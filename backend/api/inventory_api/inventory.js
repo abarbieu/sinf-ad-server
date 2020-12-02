@@ -144,7 +144,8 @@ const updateAd = (req, res) => {
 	const height = req.body.adDataObject.height;
 	const flightId = req.body.adDataObject.flightId;
 	const localStore = __dirname + "/../../public/" + adName + ".jpg";
-	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+	const imageLoc =
+		"http://localhost:" + env.PORT + "/api/images/" + adName + ".jpg";
 	const image = req.body.image;
 
 	fs.writeFile(localStore, image, function (err) {
@@ -216,7 +217,8 @@ const deleteAd = (req, res) => {
 	const adId = req.params.adId;
 	const adName = req.body.adName;
 	const localStore = __dirname + "/../../public/" + adName + ".jpg";
-	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
+	const imageLoc =
+		"http://localhost:" + env.PORT + "/api/images/" + adName + ".jpg";
 	fs.unlink(localStore, function (err) {
 		if (err) {
 			res.status(500).json({ status: "failure20", err });
