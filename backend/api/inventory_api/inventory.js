@@ -33,8 +33,9 @@ const storeAd = (req, res) => {
 	const width = req.body.adDataObject.width;
 	const height = req.body.adDataObject.height;
 	const flightId = req.body.adDataObject.flightId;
-	const localStore = __dirname + "/../../public/" + adName;
-	const imageLoc = "http://localhost:" + env.PORT + "/api/images/" + adName;
+	const localStore = __dirname + "/../../public/" + adName + ".jpg";
+	const imageLoc =
+		"http://localhost:" + env.PORT + "/api/images/" + adName + ".jpg";
 	fs.writeFile(localStore, image, function (err) {
 		if (err) {
 			res
@@ -142,7 +143,7 @@ const updateAd = (req, res) => {
 	const width = req.body.adDataObject.width;
 	const height = req.body.adDataObject.height;
 	const flightId = req.body.adDataObject.flightId;
-	const localStore = "../../public/" + adName;
+	const localStore = __dirname + "/../../public/" + adName + ".jpg";
 	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
 	const image = req.body.image;
 
@@ -213,7 +214,8 @@ const getAd = (req, res) => {
 const deleteAd = (req, res) => {
 	res.header("Content-Type", "application/json");
 	const adId = req.params.adId;
-	const localStore = "../../public/" + adName;
+	const adName = req.body.adName;
+	const localStore = __dirname + "/../../public/" + adName + ".jpg";
 	const imageLoc = "http://localhost:" + env.PORT + "/" + adName;
 	fs.unlink(localStore, function (err) {
 		if (err) {
