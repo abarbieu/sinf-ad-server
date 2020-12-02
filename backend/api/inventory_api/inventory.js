@@ -24,7 +24,10 @@ const addb = process.env.ADDB || "addb";
 
 const storeAd = (req, res) => {
 	res.header("Content-Type", "application/json");
-	const image = req.body.image;
+	const image = new Buffer.from(
+		req.body.image.raw.split("base64,")[1],
+		"base64"
+	);
 	const adName = req.body.adDataObject.adName;
 	const mainText = req.body.adDataObject.mainText;
 	const subText = req.body.adDataObject.subText;
@@ -146,8 +149,10 @@ const updateAd = (req, res) => {
 	const localStore = __dirname + "/../../public/" + adName + ".jpg";
 	const imageLoc =
 		"http://localhost:" + env.PORT + "/api/images/" + adName + ".jpg";
-	const image = req.body.image;
-
+	const image = new Buffer.from(
+		req.body.image.raw.split("base64,")[1],
+		"base64"
+	);
 	fs.writeFile(localStore, image, function (err) {
 		if (err) {
 			res.status(500).json({ status: "failure5", err });
