@@ -217,9 +217,9 @@ const deleteAd = (req, res) => {
 	const adId = req.params.adId;
 	const adName = req.body.adName;
 	const localStore = __dirname + "/../../public/" + adName + ".jpg";
-	const imageLoc =
-		"http://localhost:" + env.PORT + "/api/images/" + adName + ".jpg";
 	fs.unlink(localStore, function (err) {
+		console.log(localStore);
+		console.log("\n");
 		if (err) {
 			res.status(500).json({ status: "failure20", err });
 			return;
@@ -227,9 +227,9 @@ const deleteAd = (req, res) => {
 		console.log("Ad image deleted.");
 	});
 
-	const call = axios.delete("http://localhost:8080/api/reporting/" + adId);
+	//const call = axios.delete("http://localhost:8080/api/reporting/" + adId);
 
-	call.status;
+	//call.status;
 
 	client.query(
 		`DELETE FROM ${addb} where "adId" = $1`,
