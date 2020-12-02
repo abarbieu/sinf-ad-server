@@ -4,7 +4,7 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 
 export default function AdPreview(props) {
-   const inventoryURL = "localhost:8080/api/inventory/";
+   const inventoryURL = "http://localhost:8080/api/inventory/";
 
    const resetWindow = () => {
       window.scrollTo(0, 0);

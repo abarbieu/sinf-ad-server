@@ -19,7 +19,7 @@ export default function DetailedView(props) {
                   },
                }}
             >
-               <button class='editButton' onClick={console.log("clicked")}>
+               <button className='editButton' onClick={console.log("clicked")}>
                   Edit
                </button>
             </Link>
