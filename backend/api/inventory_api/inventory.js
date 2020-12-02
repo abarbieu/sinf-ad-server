@@ -4,21 +4,11 @@ const axios = require("axios");
 const fs = require("fs");
 const { Client } = require("pg");
 const { env } = require("process");
-const config = {
-   connectionString: process.env.PG_CXN,
-   database: process.env.PGDATABASE,
-   host: process.env.PGHOST,
-   ssl: { rejectUnauthorized: false },
-};
-const client = new Client(config);
-client.connect((err) => {
-   if (err) {
-      console.error("error connecting", err.stack);
-   } else {
-      console.log("connected");
-      client.end();
-   }
+var connectionString = process.env.PG_CXN;
+const client = new Client({
+   connectionString: connectionString,
 });
+client.connect();
 
 const addb = process.env.ADDB || "addb";
 
