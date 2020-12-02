@@ -14,15 +14,15 @@ export default function ShowReport(props) {
       conversions: 0,
    });
 
-   const reportPath = "http://localhost:8080/reporting";
+   const reportPath = "http://localhost:8080/api/reporting/sum";
 
    axios
       .get(reportPath + "/2")
       .then((res) => {
          updateReportDesktop({
-            impressions: res.params.impressions,
-            clicks: res.params.clicks,
-            conversions: res.params.conversions,
+            impressions: res.adStatsObject.impressions,
+            clicks: res.adStatsObject.clicks,
+            conversions: res.adStatsObject.conversions,
          });
       })
       .catch((err) => console.error(err));
