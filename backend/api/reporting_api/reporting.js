@@ -1,11 +1,20 @@
 require("dotenv").config({ path: "../" });
 
 const { Client } = require("pg");
-var connectionString = process.env.PG_CXN;
-const client = new Client({
-   connectionString: connectionString,
+const config = {
+   database: process.env.PGDATABASE,
+   host: process.env.PGHOST,
+   ssl: { rejectUnauthorized: false },
+};
+const client = new Client(config);
+client.connect((err) => {
+   if (err) {
+      console.error("error connecting", err.stack);
+   } else {
+      console.log("connected");
+      client.end();
+   }
 });
-client.connect();
 
 const statsdb = process.env.STATSDB || "statsdb";
 
