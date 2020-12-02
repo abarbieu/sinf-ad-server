@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Form } from "react-bootstrap";
-import axios from "axios";
-import Dropdown from "react-bootstrap/Dropdown";
+//import { useState } from "react";
+//import { Form } from "react-bootstrap";
+//import axios from "axios";
+//import Dropdown from "react-bootstrap/Dropdown";
 import { Link } from "react-router-dom";
 
 export default function DetailedView(props) {
