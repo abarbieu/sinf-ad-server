@@ -210,7 +210,7 @@ const deleteAd = (req, res) => {
    const adId = req.params.adId;
    const adName = req.body.adName;
    console.log("DELETING", adId, adName);
-   // cocnst localStore = __dirname + "/../../public/" + adName + ".jpg";
+   // const localStore = __dirname + "/../../public/" + adName + ".jpg";
    // fs.unlink(localStore, function (err) {
    //    console.log(localStore);
    //    console.log("\n");

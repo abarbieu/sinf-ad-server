@@ -22,11 +22,7 @@ export default class AdTemplate extends React.Component {
          msgColor: "red",
          url: "http://localhost:8080/",
       };
-
    }
-
-   
-
 
    fileChangedHandler = (e) => {
       const reader = new FileReader();
@@ -58,7 +54,7 @@ export default class AdTemplate extends React.Component {
          this.state.flightId !== ""
       ) {
          axios
-            .post(this.state.url+"api/inventory", {
+            .post(this.state.url + "api/inventory", {
                image: this.state.image,
                adDataObject: {
                   adName: this.state.adName,
@@ -72,7 +68,11 @@ export default class AdTemplate extends React.Component {
                },
             })
             .then(() => {
-               this.setState({ errState: "Success", msgColor: "green", modalState: false });
+               this.setState({
+                  errState: "Success",
+                  msgColor: "green",
+                  modalState: false,
+               });
             })
             .catch((err) => {
                this.setState({ modalState: false });
@@ -163,8 +163,7 @@ export default class AdTemplate extends React.Component {
                   </button>
                </div>
             </Modal>
-            
-            
+
             <div
                style={{
                   display: "flex",
