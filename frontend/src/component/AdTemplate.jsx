@@ -14,7 +14,7 @@ export default class AdTemplate extends React.Component {
          mainText: "",
          subtext: "",
          linkText: "",
-         linkLocation: "",
+         linkLoc: "",
          height: 0,
          width: 0,
          modalState: false,
@@ -48,6 +48,7 @@ export default class AdTemplate extends React.Component {
    };
 
    uploadHandler = () => {
+      console.log(this.state.linkLoc);
       if (
          this.state.adName !== "" &&
          this.state.image !== "" &&
@@ -57,31 +58,31 @@ export default class AdTemplate extends React.Component {
          this.state.linkLoc !== "" &&
          this.state.flightId !== ""
       ) {
-         axios
-            .post(this.state.url+"api/inventory", {
-               image: this.state.image,
-               adDataObject: {
-                  adName: this.state.adName,
-                  mainText: this.state.mainText,
-                  subText: this.state.subtext,
-                  linkText: this.state.linkText,
-                  linkLoc: this.state.linkLoc,
-                  height: this.state.height,
-                  width: this.state.width,
-                  flightId: this.state.flightId,
-               },
-            })
-            .then(() => {
-               this.setState({ errState: "Success", msgColor: "green", modalState: false });
-            })
-            .catch((err) => {
-               this.setState({ modalState: false });
-               this.setState({
-                  errState: "Error occured while submitting",
-                  msgColor: "red",
-               });
-               window.scrollTo(0, 0);
+      axios
+         .post(this.state.url+"api/inventory", {
+            image: this.state.image,
+            adDataObject: {
+               adName: this.state.adName,
+               mainText: this.state.mainText,
+               subText: this.state.subtext,
+               linkText: this.state.linkText,
+               linkLoc: this.state.linkLoc,
+               height: this.state.height,
+               width: this.state.width,
+               flightId: this.state.flightId,
+            },
+         })
+         .then(() => {
+            this.setState({ errState: "Success", msgColor: "green", modalState: false });
+         })
+         .catch((err) => {
+            this.setState({ modalState: false });
+            this.setState({
+               errState: "Error occured while submitting",
+               msgColor: "red",
             });
+            window.scrollTo(0, 0);
+         });
       } else {
          this.setState({ modalState: false });
          this.setState({ errState: "Incomplete form", msgColor: "red" });
@@ -106,7 +107,7 @@ export default class AdTemplate extends React.Component {
    };
 
    updateLinkToState = (s) => {
-      this.setState({ linkLocation: s });
+      this.setState({ linkLoc: s });
       console.log("changed");
    };
 
@@ -140,7 +141,7 @@ export default class AdTemplate extends React.Component {
                <p>{this.state.mainText}</p>
                <p>{this.state.subtext}</p>
                <p>{this.state.linkText}</p>
-               <p>{this.state.linkLocation}</p>
+               <p>{this.state.linkLoc}</p>
                <p>{this.state.flightId}</p>
                <div
                   style={{

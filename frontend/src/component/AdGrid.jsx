@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AdPreview from "./AdPreview.jsx";
 import axios from 'axios'
 //import placeholder from "./img/placeholder.png";
@@ -11,7 +11,6 @@ export default function AdGrid(props) {
     axios.get(url+'api/inventory')
       .then((res) => {
           setItems(res.data.adDataObjects);
-          //console.table(getItems);
        })
        .catch((err) => {
           console.error(err);

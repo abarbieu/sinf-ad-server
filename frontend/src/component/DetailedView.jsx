@@ -34,7 +34,7 @@ export default function DetailedView(props) {
          <h3>Main text: {ad.mainText}</h3>
          <h3>Subtext: {ad.subText}</h3>
          <h3>Link text: {ad.linkText}</h3>
-         <h3>Link Location: {ad.linkLocation}</h3>
+         <h3>Link Location: {ad.linkLoc}</h3>
       </>
    );
 

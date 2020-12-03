@@ -14,7 +14,7 @@ export default function EditView(props){
             mainText: ad.mainText,
             subText: ad.subText,
             linkText: ad.linkText,
-            linkLocation: ad.linkLoc,
+            linkLoc: ad.linkLoc,
             height: ad.height,
             width: ad.width,
          }
@@ -49,7 +49,7 @@ export default function EditView(props){
            adInfo.flightId !== ""
         ) {
            axios
-              .put(`/api/inventory/${ad.adId}`, {
+              .put(`http://localhost:8080/api/inventory/${ad.adId}`, {
                  imageLoc: adInfo.imageLoc,
                  adDataObject: {
                     adName: adInfo.adName,
@@ -83,7 +83,7 @@ export default function EditView(props){
      };
   
     const updateLinkToState = (s) => {
-        setAdInfo({ linkLocation: s });
+        setAdInfo({ linkLoc: s });
      };
   
     const updateFlightState = (s) => {
