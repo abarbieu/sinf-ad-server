@@ -4,17 +4,8 @@ import axios from "axios";
 import Button from "react-bootstrap/Button";
 
 export default function AdPreview(props) {
-   const inventoryURL = "http://localhost:8080/api/inventory/";
-
    const resetWindow = () => {
       window.scrollTo(0, 0);
-   };
-
-   const deleteAd = () => {
-      console.log("Deleting ad " + props.adObj.adId);
-      axios
-         .delete(inventoryURL + props.adObj.adId)
-         .catch((err) => console.error(err));
    };
 
    //console.log(props.adObj.id)
@@ -60,7 +51,9 @@ export default function AdPreview(props) {
             </Link>
             <Button
                variant='danger'
-               onClick={() => deleteAd()}
+               onClick={() =>
+                  props.deleteAd(props.adObj.adId, props.adObj.adName)
+               }
                style={{ fontSize: "12px" }}
             >
                Delete

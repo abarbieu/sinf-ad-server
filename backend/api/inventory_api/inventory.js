@@ -207,23 +207,19 @@ const getAd = (req, res) => {
 };
 
 const deleteAd = (req, res) => {
-   res.header("Content-Type", "application/json");
    const adId = req.params.adId;
    const adName = req.body.adName;
-   const localStore = __dirname + "/../../public/" + adName + ".jpg";
-   fs.unlink(localStore, function (err) {
-      console.log(localStore);
-      console.log("\n");
-      if (err) {
-         res.status(500).json({ status: "failure20", err });
-         return;
-      }
-      console.log("Ad image deleted.");
-   });
-
-   //const call = axios.delete("http://localhost:8080/api/reporting/" + adId);
-
-   //call.status;
+   console.log("DELETING", adId, adName);
+   // cocnst localStore = __dirname + "/../../public/" + adName + ".jpg";
+   // fs.unlink(localStore, function (err) {
+   //    console.log(localStore);
+   //    console.log("\n");
+   //    if (err) {
+   //       res.status(500).json({ status: "failure20", err });
+   //       return;
+   //    }
+   //    console.log("Ad image deleted.");
+   // });
 
    client.query(
       `DELETE FROM ${addb} where "adId" = $1`,

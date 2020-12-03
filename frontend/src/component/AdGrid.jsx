@@ -1,37 +1,76 @@
-import React, { useState, useEffect } from "react";
 import AdPreview from "./AdPreview.jsx";
-import axios from 'axios'
+import axios from "axios";
 //import placeholder from "./img/placeholder.png";
+import React, { Component } from "react";
 
-export default function AdGrid(props) {
-   //const [inv, setInv] = useState([]);
-   const url = 'http://localhost:8080/';
-   const [items, setItems] = useState([])
+export default class AdGrid extends Component {
+   constructor(props) {
+      super(props);
+      this.state = {
+         items: [],
+      };
+      this.url = "http://localhost:8080/";
+      this.inventoryURL = "http://localhost:8080/api/inventory/";
+   }
 
-    axios.get(url+'api/inventory')
-      .then((res) => {
-          setItems(res.data.adDataObjects);
-          //console.table(getItems);
-       })
-       .catch((err) => {
-          console.error(err);
-          console.log('Could not load data');
-       })
+   componentDidMount() {
+      axios
+         .get(this.url + "api/inventory")
+         .then((res) => {
+            this.setState({ items: res.data.adDataObjects });
+            //console.table(getItems);
+         })
+         .catch((err) => {
+            console.error(err);
+            console.log("Could not load data");
+         });
+   }
 
-   return (
-      <div
-         style={{
-            width: "90%",
-            position: "absolute",
-            top: "150px",
-            left: "5%",
-            display: "flex",
-            flexDirection: "column",
-         }}
-      >
-         {items.map((v) => (
-            <AdPreview key={v.adDataObject.adId} adObj={v.adDataObject} />
-         ))}
-      </div>
-   );
+   deleteAd = (id, adName) => {
+      console.log("Deleting ad " + id);
+      let newItems = [];
+      this.state.items.forEach((item) => {
+         if (item.adDataObject.adId != id) {
+            newItems.push(item);
+         }
+      });
+      this.setState({ items: newItems });
+      // console.log(adName);
+      axios
+         .delete(this.inventoryURL + id, {
+            data: {
+               adName,
+            },
+         })
+         .catch((err) => console.error(err))
+         .then((res) => {
+            console.log(res);
+         })
+         .catch((err) => {
+            console.error(err);
+         });
+   };
+
+   render() {
+      return (
+         <div
+            style={{
+               width: "90%",
+               position: "absolute",
+               top: "150px",
+               left: "5%",
+               display: "flex",
+               flexDirection: "column",
+            }}
+         >
+            {this.state.items.map((v) => (
+               <AdPreview
+                  key={v.adDataObject.adId}
+                  adObj={v.adDataObject}
+                  deleteAd={this.deleteAd}
+               />
+            ))}
+         </div>
+      );
+   }
 }
