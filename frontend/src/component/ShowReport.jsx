@@ -20,9 +20,9 @@ export default function ShowReport(props) {
       .get(reportPath + "/2")
       .then((res) => {
          updateReportDesktop({
-            impressions: res.adStatsObject.impressions,
-            clicks: res.adStatsObject.clicks,
-            conversions: res.adStatsObject.conversions,
+            impressions: res.data.summedAdsObject.impressions,
+            clicks: res.data.summedAdsObject.clicks,
+            conversions: res.data.summedAdsObject.conversions,
          });
       })
       .catch((err) => console.error(err));
@@ -31,9 +31,9 @@ export default function ShowReport(props) {
       .get(reportPath + "/1")
       .then((res) => {
          updateReportMobile({
-            impressions: res.params.impressions,
-            clicks: res.params.clicks,
-            conversions: res.params.conversions,
+            impressions: res.data.summedAdsObject.impressions,
+            clicks: res.data.summedAdsObject.clicks,
+            conversions: res.data.summedAdsObject.conversions,
          });
       })
       .catch((err) => console.error(err));
