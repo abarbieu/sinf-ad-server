@@ -25,9 +25,30 @@ export default class AdTemplate extends React.Component {
    }
 
    fileChangedHandler = (e) => {
+      e.preventDefault();
+      const file = e.target.files[0];
       const reader = new FileReader();
 
-      reader.onload = () => {
+      let f = {};
+      f.filename = file.name;
+      f.contentType = file.type;
+      reader.addEventListener("load", (event) => {
+         f.raw = event.target.result;
+         var image = new Image();
+         image.src = reader.result;
+         image.onload = () => {
+            this.setState({ height: image.height });
+            this.setState({ width: image.width });
+         };
+      });
+
+      const reader = new FileReader();
+
+      reader.readAsDataURL(file);
+      this.setState({ image: f.raw });
+
+      const reader2 = new FileReader();
+      reader2.onload = () => {
          if (reader.readyState === 2) {
             this.setState({ image: reader.result });
 
